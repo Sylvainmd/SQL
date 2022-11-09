@@ -1,7 +1,6 @@
 # SQL
 ***
-## Table des matières:
-[TP1](##TP1)
+
 ## TP1
 
 ### Schéma relationnel de la base :

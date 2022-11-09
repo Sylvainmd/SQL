@@ -4,7 +4,7 @@
 ## TP1 
 
 -- 1
-select nom, prenom
+select nom, prenom <br/>
 from personne
 order by nom, prenom;
 

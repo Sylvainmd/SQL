@@ -381,32 +381,32 @@ where '12/01/2021' between h.datedeb AND (h.datedeb + nbjour);
 
 ## TP3
 
---1
+### 1
 ```
 SELECT p.nom, p.prenom 
 FROM personnes p 
 ORDER BY p.nom DESC;
 ```
---2
+### 2
 ```
 SELECT a.typeavi, a.nbpersmaxi
 FROM avion a
 WHERE a.nuavi = 2;
 ```
---3
+### 3
 ```
 SELECT a.typeavi 
 FROM avion a INNER JOIN vol v ON a.nuavi = v.nuavi
 WHERE v.distance = (SELECT MIN(v1.distance) FROM vol v1);
 ```
--- 4
+### 4
 ```
 SELECT p.nom, p.prenom 
 FROM personnes p INNER JOIN voyage v ON v.nupers = p.nupers 
 JOIN vol vo ON v.nuvol = vo.nuvol
 WHERE vo.datevol = '16/08/2022';
 ```
---5
+### 5
 ```
 SELECT v1.datevol
 FROM vol v INNER JOIN AVION a on a.nuavi = v.nuavi 
@@ -416,13 +416,13 @@ AND v.distance = (SELECT MIN(v1.distance)
 				  WHERE a1.typeavi = 'F-Jet');
 ```
 
---6
+### 6
 ```
 SELECT AVG(v.distance) 
 FROM vol v INNER JOIN avion a ON v.nuavi = a.nuavi
 WHERE a.typeavi = 'A330';
 ```
---7
+### 7
 ```
 SELECT p.nom, p.prenom 
 FROM personnes p INNER JOIN voyage v ON v.nupers = p.nupers
@@ -433,7 +433,7 @@ HAVING COUNT(*) = (SELECT MAX(COUNT(*)) FROM voyage v1 INNER JOIN personnes p1 O
 			GROUP BY v1.nupers );
 ```
 
---8
+### 8
 ```
 SELECT a.typeavi 
 FROM avion a INNER JOIN vol v ON a.nuavi = v.nuavi
@@ -441,7 +441,7 @@ GROUP BY a.typeavi
 HAVING SUM(v.distance) = (SELECT max(SUM(v1.distance)) FROM vol v1
                           GROUP BY v1.nuavi);
 ```
---9
+### 9
 ```
 SELECT a.typeavi 
 FROM avion a INNER JOIN vol v ON a.nuavi = v.nuavi 
@@ -456,7 +456,7 @@ JOIN personnes p ON vo.nupers = p.nupers
 WHERE p.nom = 'PONSONNET' AND p.prenom = 'Pierre';
 ```
 
---10
+### 10
 ```
 select a.typeavi from personnes p 
 inner join voyage v on v.nupers = p.nupers 
@@ -468,7 +468,7 @@ and vo.distance = (select max(vo1.distance) from voyage v1
 			where v1.nupers = p.nupers);
 ```
 					  
---11
+### 11
 ```
 SELECT p.nom, p.prenom, SUM(vo.distance) 
 FROM personnes p LEFT JOIN voyage v ON v.nupers = p.nupers
@@ -476,7 +476,7 @@ LEFT JOIN vol vo ON v.nuvol = vo.nuvol
 GROUP BY p.nom, p.prenom;
 ```
 
---12
+### 12
 ```
 SELECT p.nom, p.prenom 
 FROM personnes p 
@@ -485,7 +485,7 @@ WHERE nupers NOT IN (SELECT nupers
                       INNER JOIN avion a ON vo.nuavi = a.nuavi
                       WHERE a.typeavi = 'Falcon');
 ```
---ou
+#### ou
 ```
 SELECT p.nom, p.prenom 
 FROM personnes p 
@@ -495,7 +495,7 @@ WHERE NOT exists (SELECT *
                       and p.nupers = v.nupers
                       WHERE a.typeavi = 'Falcon');
 ```
---ou
+#### ou
 ```
 SELECT p.nom, p.prenom 
 FROM personnes p 
@@ -506,7 +506,7 @@ FROM personnes p1 INNER JOIN voyage v ON p1.nupers = v.nupers INNER JOIN vol vo 
                       and p.nupers = v.nupers
                       WHERE a.typeavi = 'Falcon';
 ```
---13
+#### 13
 ```
 select a.typeavi, avg(p.age)
 from personne p 
@@ -517,7 +517,7 @@ WHERE vo.distance > 500
 group by a.typeavi;
 ```
 
---14
+### 14
 ```
 SELECT p.nom, p.prenom 
 FROM personnes p INNER JOIN voyage v ON v.nupers = p.nupers 
@@ -528,3 +528,144 @@ FROM personnes p INNER JOIN voyage v ON v.nupers = p.nupers
 JOIN vol vo ON v.nuvol = vo.nuvol
 WHERE vo.villedep = 'Lyon' AND vo.datevol BETWEEN '01/06/2019' AND '30/06/2022';
 ```
+###
+
+## TP4 !!! Certaines requêtes sont susceptible de ne pas fonctionner !!!
+
+--1
+select nom,prenom from client
+order by nom,prenom;
+
+--2
+select libelle from produit
+where prix=(select max(prix) from produit);
+
+--3
+select nom,prenom,count(numfact) from client c,facture f
+where c.numcli=f.numcli(+)
+group by nom,prenom;
+
+--4
+select numfact,(sum(prix)) from lignefacture lf,produit p
+where lf.numprod=p.numprod
+group by numfact;
+
+--5
+select nom,prenom from client c,facture f
+where c.numcli=f.numcli(+)
+and c.numcli not in (select c.numcli from client c, facture f
+where c.numcli=f.numcli);
+
+--6
+select libelle from produit p,lignefacture lf
+where p.numprod=lf.numprod
+and numfact=3
+intersect
+select libelle from produit p,lignefacture lf
+where p.numprod=lf.numprod
+and numfact=4;
+
+select * from produit;
+
+--7
+select nom,prenom,count(*) from client c,facture f,lignefacture lf
+where c.numcli=f.numcli and f.numfact=lf.numfact
+group by nom,prenom,f.numfact
+having count(*)=(select count(*) from produit);
+
+--8
+select libelle,count(*) from produit p,lignefacture lf
+where p.numprod=lf.numprod
+group by libelle
+having count(*)=(select count(*) from facture);
+
+--9
+select libelle,sum(qte) from produit p,lignefacture lf
+where p.numprod=lf.numprod
+group by libelle
+having sum(qte)=(select (max(sum(qte))) from lignefacture group by numprod);
+
+--10
+select numfact,libelle from lignefacture lf,produit p
+where lf.numprod=p.numprod
+and qte=(select max(qte) from lignefacture lf1
+where lf.numfact=lf1.numfact);
+
+--11
+select nom,prenom from client c,facture f,lignefacture lf,produit p
+where c.numcli=f.numcli and f.numfact=lf.numfact and p.numprod=lf.numprod
+group by nom,prenom,f.numfact
+having sum(qte*prix)=(select max(sum(qte*prix)) from lignefacture lf,produit p
+where p.numprod=lf.numprod group by numfact);
+
+--12
+select nom,prenom,f.numfact from client c,facture f,lignefacture lf,produit p
+where c.numcli=f.numcli and f.numfact=lf.numfact and lf.numprod=p.numprod
+group by nom,prenom,f.numfact,c.numcli
+having sum(qte*prix)=(select min(sum(qte*prix)) from lignefacture lf1,produit p1,client c1,facture f1
+where lf1.numfact=f1.numfact and f1.numcli=c1.numcli and lf1.numprod=p1.numprod and c1.numcli=c.numcli
+group by f1.numfact,c1.numcli);
+
+--13
+select libelle from produit p
+where libelle not in (select libelle from produit p,lignefacture lf
+where p.numprod=lf.numprod and numfact=2)
+intersect
+select libelle from produit p
+where libelle not in (select libelle from produit p,lignefacture lf
+where p.numprod=lf.numprod and numfact=3);
+
+--14
+select numfact,sum(qte) from lignefacture
+group by numfact
+order by numfact;
+
+--15
+select libelle from produit
+minus
+(select libelle from produit p,lignefacture lf,facture f
+where p.numprod=lf.numprod and lf.numfact=f.numfact
+and datefact='15/09/2022');
+
+--16
+select nom,prenom from client
+minus
+(select nom,prenom from client c,facture f 
+where c.numcli=f.numcli
+and datefact='15/09/2022')
+intersect
+select nom,prenom from client
+minus
+(select nom,prenom from client c,facture f 
+where c.numcli=f.numcli
+and datefact='17/07/2022');
+
+--17
+select qte from lignefacture lf,produit p
+where lf.numprod=p.numprod
+and prix=(select min(prix) from produit p,lignefacture lf1
+where p.numprod=lf1.numprod and lf.numfact=lf1.numfact)
+and numfact in (select numfact from lignefacture lf,produit p
+where lf.numprod=p.numprod
+group by numfact
+having sum(qte*prix)=(select max(sum(qte*prix)) from lignefacture lf,produit p
+where p.numprod=lf.numprod group by numfact));
+
+--18 NE FONCTIONNE PAS
+select libelle from produit
+where libelle not in (select libelle from produit p,lignefacture lf,facture f,client c
+where p.numprod=lf.numprod and lf.numfact=f.numfact and f.numcli=c.numcli
+and c.numcli=4
+group by libelle,lf.numfact
+having sum(qte*prix)=(select min(sum(qte*prix)) from lignefacture lf,produit p, facture f,client c
+where p.numprod=lf.numprod and lf.numfact=f.numfact and f.numcli=c.numcli
+and c.numcli=4 group by libelle,lf.numfact));
+
+--19 NE FONCTIONNE PAS
+select avg(qte) from lignefacture lf
+group by numfact
+having count(*)=(select max(count(*)) from lignefacture group by numfact);
+
+--20
+select numfact,libelle from produit p,lignefacture lf
+where p.numprod=lf.numprod

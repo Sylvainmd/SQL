@@ -531,141 +531,253 @@ WHERE vo.villedep = 'Lyon' AND vo.datevol BETWEEN '01/06/2019' AND '30/06/2022';
 ###
 
 ## TP4 !!! Certaines requêtes sont susceptible de ne pas fonctionner !!!
+ps: merci Léo pour la correction
 
---1
+### 1
+```
 select nom,prenom from client
 order by nom,prenom;
+```
 
---2
+### 2
+```
 select libelle from produit
-where prix=(select max(prix) from produit);
+where prix=(select max(prix) 
+	    from produit);
+```
 
---3
-select nom,prenom,count(numfact) from client c,facture f
+### 3
+```
+select nom,prenom,count(numfact) 
+from client c,facture f
 where c.numcli=f.numcli(+)
 group by nom,prenom;
+```
 
---4
-select numfact,(sum(prix)) from lignefacture lf,produit p
+### 4
+```
+select numfact,(sum(prix)) 
+from lignefacture lf,produit p
 where lf.numprod=p.numprod
 group by numfact;
+```
 
---5
-select nom,prenom from client c,facture f
+### 5
+```
+select nom,prenom 
+from client c,facture f
 where c.numcli=f.numcli(+)
-and c.numcli not in (select c.numcli from client c, facture f
-where c.numcli=f.numcli);
+and c.numcli not in (select c.numcli 
+		     from client c, facture f
+		     where c.numcli=f.numcli);
+```
 
---6
-select libelle from produit p,lignefacture lf
+### 6
+```
+select libelle 
+from produit p,lignefacture lf
 where p.numprod=lf.numprod
 and numfact=3
+
 intersect
-select libelle from produit p,lignefacture lf
+
+select libelle 
+from produit p,lignefacture lf
 where p.numprod=lf.numprod
 and numfact=4;
 
-select * from produit;
+```
 
---7
-select nom,prenom,count(*) from client c,facture f,lignefacture lf
-where c.numcli=f.numcli and f.numfact=lf.numfact
+### 7
+```
+select nom,prenom,count(*) 
+from client c,facture f,lignefacture lf
+where c.numcli=f.numcli 
+and f.numfact=lf.numfact
 group by nom,prenom,f.numfact
-having count(*)=(select count(*) from produit);
+having count(*)=(select count(*) 
+		 from produit);
+```
 
---8
-select libelle,count(*) from produit p,lignefacture lf
+### 8
+```
+select libelle,count(*) 
+from produit p,lignefacture lf
 where p.numprod=lf.numprod
 group by libelle
-having count(*)=(select count(*) from facture);
+having count(*)=(select count(*) 
+		 from facture);
+```
 
---9
-select libelle,sum(qte) from produit p,lignefacture lf
+### 9
+```
+select libelle,sum(qte) 
+from produit p,lignefacture lf
 where p.numprod=lf.numprod
 group by libelle
-having sum(qte)=(select (max(sum(qte))) from lignefacture group by numprod);
+having sum(qte)=(select (max(sum(qte))) 
+		 from lignefacture 
+		 group by numprod);
+```
 
---10
-select numfact,libelle from lignefacture lf,produit p
+### 10
+```
+select numfact,libelle 
+from lignefacture lf,produit p
 where lf.numprod=p.numprod
-and qte=(select max(qte) from lignefacture lf1
-where lf.numfact=lf1.numfact);
+and qte=(select max(qte) 
+	 from lignefacture lf1
+	 where lf.numfact=lf1.numfact);
+```
 
---11
-select nom,prenom from client c,facture f,lignefacture lf,produit p
-where c.numcli=f.numcli and f.numfact=lf.numfact and p.numprod=lf.numprod
+### 11
+```
+select nom,prenom 
+from client c,facture f,lignefacture lf,produit p
+where c.numcli=f.numcli 
+and f.numfact=lf.numfact 
+and p.numprod=lf.numprod
 group by nom,prenom,f.numfact
-having sum(qte*prix)=(select max(sum(qte*prix)) from lignefacture lf,produit p
-where p.numprod=lf.numprod group by numfact);
+having sum(qte*prix)=(select max(sum(qte*prix)) 
+		      from lignefacture lf,produit p
+		      where p.numprod=lf.numprod 
+		      group by numfact);
+```
 
---12
-select nom,prenom,f.numfact from client c,facture f,lignefacture lf,produit p
-where c.numcli=f.numcli and f.numfact=lf.numfact and lf.numprod=p.numprod
+### 12
+```
+select nom,prenom,f.numfact 
+from client c,facture f,lignefacture lf,produit p
+where c.numcli=f.numcli 
+and f.numfact=lf.numfact 
+and lf.numprod=p.numprod
 group by nom,prenom,f.numfact,c.numcli
-having sum(qte*prix)=(select min(sum(qte*prix)) from lignefacture lf1,produit p1,client c1,facture f1
-where lf1.numfact=f1.numfact and f1.numcli=c1.numcli and lf1.numprod=p1.numprod and c1.numcli=c.numcli
-group by f1.numfact,c1.numcli);
+having sum(qte*prix)=(select min(sum(qte*prix)) 
+		      from lignefacture lf1,produit p1,client c1,facture f1
+		      where lf1.numfact=f1.numfact 
+		      and f1.numcli=c1.numcli 
+		      and lf1.numprod=p1.numprod 
+		      and c1.numcli=c.numcli
+		      group by f1.numfact,c1.numcli);
+```
 
---13
-select libelle from produit p
-where libelle not in (select libelle from produit p,lignefacture lf
-where p.numprod=lf.numprod and numfact=2)
+### 13
+```
+select libelle 
+from produit p
+where libelle not in (select libelle 
+		      from produit p,lignefacture lf
+		      where p.numprod=lf.numprod 
+		      and numfact=2)
+		      
 intersect
-select libelle from produit p
-where libelle not in (select libelle from produit p,lignefacture lf
-where p.numprod=lf.numprod and numfact=3);
 
---14
-select numfact,sum(qte) from lignefacture
+select libelle 
+from produit p
+where libelle not in (select libelle 
+		      from produit p,lignefacture lf
+		      where p.numprod=lf.numprod 
+		      and numfact=3);
+```
+
+### 14
+```
+select numfact,sum(qte) 
+from lignefacture
 group by numfact
 order by numfact;
+```
 
---15
-select libelle from produit
-minus
-(select libelle from produit p,lignefacture lf,facture f
-where p.numprod=lf.numprod and lf.numfact=f.numfact
-and datefact='15/09/2022');
+### 15
+```
+select libelle 
+from produit
 
---16
-select nom,prenom from client
 minus
-(select nom,prenom from client c,facture f 
-where c.numcli=f.numcli
-and datefact='15/09/2022')
+
+(select libelle 
+ from produit p,lignefacture lf,facture f
+ where p.numprod=lf.numprod 
+ and lf.numfact=f.numfact
+ and datefact='15/09/2022');
+```
+
+### 16
+```
+select nom,prenom 
+from client
+
+minus
+
+(select nom,prenom 
+ from client c,facture f 
+ where c.numcli=f.numcli
+ and datefact='15/09/2022')
+ 
 intersect
-select nom,prenom from client
+select nom,prenom 
+from client
+
 minus
-(select nom,prenom from client c,facture f 
-where c.numcli=f.numcli
-and datefact='17/07/2022');
 
---17
-select qte from lignefacture lf,produit p
-where lf.numprod=p.numprod
-and prix=(select min(prix) from produit p,lignefacture lf1
-where p.numprod=lf1.numprod and lf.numfact=lf1.numfact)
-and numfact in (select numfact from lignefacture lf,produit p
-where lf.numprod=p.numprod
-group by numfact
-having sum(qte*prix)=(select max(sum(qte*prix)) from lignefacture lf,produit p
-where p.numprod=lf.numprod group by numfact));
+(select nom,prenom 
+ from client c,facture f 
+ where c.numcli=f.numcli
+ and datefact='17/07/2022');
+```
 
---18 NE FONCTIONNE PAS
-select libelle from produit
-where libelle not in (select libelle from produit p,lignefacture lf,facture f,client c
-where p.numprod=lf.numprod and lf.numfact=f.numfact and f.numcli=c.numcli
-and c.numcli=4
+### 17
+```
+select qte 
+from lignefacture lf,produit p
+where lf.numprod=p.numprod
+and prix=(select min(prix) 
+	  from produit p,lignefacture lf1
+	  where p.numprod=lf1.numprod 
+	  and lf.numfact=lf1.numfact)
+and numfact in (select numfact 
+		from lignefacture lf,produit p
+		where lf.numprod=p.numprod
+		group by numfact
+		having sum(qte*prix)=(select max(sum(qte*prix)) 
+				      from lignefacture lf,produit p
+				      where p.numprod=lf.numprod 
+				      group by numfact));
+```
+
+### 18 NE FONCTIONNE PAS
+```
+select libelle 
+from produit
+where libelle not in (select libelle 
+		      from produit p,lignefacture lf,facture f,client c
+		      where p.numprod=lf.numprod 
+		      and lf.numfact=f.numfact 
+		      and f.numcli=c.numcli
+		      and c.numcli=4)
 group by libelle,lf.numfact
-having sum(qte*prix)=(select min(sum(qte*prix)) from lignefacture lf,produit p, facture f,client c
-where p.numprod=lf.numprod and lf.numfact=f.numfact and f.numcli=c.numcli
-and c.numcli=4 group by libelle,lf.numfact));
+having sum(qte*prix)=(select min(sum(qte*prix)) 
+		      from lignefacture lf,produit p, facture f,client c
+		      where p.numprod=lf.numprod 
+		      and lf.numfact=f.numfact 
+		      and f.numcli=c.numcli
+		      and c.numcli=4 
+		      group by libelle,lf.numfact));
+```
 
---19 NE FONCTIONNE PAS
-select avg(qte) from lignefacture lf
+### 19 NE FONCTIONNE PAS
+```
+select avg(qte) 
+from lignefacture lf
 group by numfact
-having count(*)=(select max(count(*)) from lignefacture group by numfact);
+having count(*)=(select max(count(*)) 
+		 from lignefacture 
+		 group by numfact);
+```
 
---20
-select numfact,libelle from produit p,lignefacture lf
+### 20 NE FONCTIONNE PEUT ETRE PAS (j'ai pas essayé)
+```
+select numfact,libelle 
+from produit p,lignefacture lf
 where p.numprod=lf.numprod
+```

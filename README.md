@@ -5,6 +5,7 @@
 ```
 fetch first 1 ROW only;
 ```
+round() --> permet d'arondir le resultat
 ## TP1
 
 ### Schéma relationnel de la base :
@@ -814,4 +815,14 @@ having count(*)=(select max(count(*))
 select numfact,libelle 
 from produit p,lignefacture lf
 where p.numprod=lf.numprod
+```
+
+## TP5
+
+### 3
+```
+select libelle
+from formation
+where duree = (select min(duree)
+	       from formation);
 ```

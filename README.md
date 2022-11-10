@@ -1,6 +1,10 @@
 # SQL
 
 
+### Afficher seulement le premier résultat
+```
+fetch first 1 ROW only;
+```
 ## TP1
 
 ### Schéma relationnel de la base :
